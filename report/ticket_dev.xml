@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--FORMATO DE LA PAGINA DEL REPORTE-->
+        <template id="template_inv_ticket_dev" name="template_inv_ticket_dev">
+            <t t-call="report.html_container" t-att-style="editable and 'margin-top: 0px; font-size: 80%;'">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page" style="font-size: 7pt;font-family:Helvetica,Verdana,Arial,sans,Lucida Grande,Calibri;">
+                        <table class="table table-bordered" style="border-style:solid">
+                            <thead>
+                                <tr>
+                                    <!--center><span t-field="o.company_id.logo" t-field-options="{&quot;widget&quot;:&quot;image&quot;}" /></center-->
+                                    ******************************************************************
+                                    <br/>
+                                    ******************************************************************
+                                    <center>
+                                        <t t-if="o.picking_type_id.code == 'incoming'">
+                                            NOTA DE ENTRADA
+                                        </t>
+                                        <t t-if="o.picking_type_id.code == 'outgoing'">
+                                            NOTA DE SALIDA
+                                        </t>
+                                        <br/>
+                                        <b><span t-field="o.company_id.name" /></b>
+                                        <br/>
+                                        <span t-field="o.company_id.street" /> #<span t-field="o.company_id.l10n_mx_street3" />, <span t-field="o.company_id.street2" /> <br/>
+                                        <span t-field="o.company_id.township_sat_id.name" />, <span t-field="o.company_id.state_id.name" />,
+                                        <span t-field="o.company_id.country_id.name" />, CP <span t-field="o.company_id.zip" />
+                                        <br/>RFC <t t-if="o.partner_id"><span t-esc="o.check_vat_mx(o.partner_id.vat)" /></t>
+                                    </center>
+                                    <br/>
+                                    *<span t-field="o.origin" /> / <span t-field="o.name" /><![CDATA[&nbsp;]]><span t-esc="time.strftime('%d/%m/%Y')"/>*
+                                    <br/>    
+                                </tr> 
+                            </thead>
+                        </table>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4">******************************************************************</td>
+                                </tr>
+                                <tr>
+                                    <td width="10">Cant.</td>
+                                    <td width="50">Descripcion</td>
+                                    <td width="20" style="padding-left:5px;">P. Unit.</td>
+                                    <td width="20" style="padding-left:5px;">Total</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">******************************************************************</td>
+                                </tr>
+                                <tr t-foreach="o.pack_operation_product_ids" t-as="l">
+                                    <p>
+                                        <t t-if="l.qty_done &gt; 0">
+                                            <td width="10"><span t-esc="'%.0f'%l.qty_done" /></td>
+                                            <td width="50"><span t-field="l.product_id.name" />(<span t-field="l.product_id.attribute_value_ids.name" />)<span t-field="l.product_id.season_id.name" /></td>
+                                            <t t-if="o.picking_type_id.code == 'incoming'">
+                                                <td width="20" style="padding-left:5px;">$<span t-field="l.product_id.standard_price" /></td>
+                                                <td width="20" style="padding-left:5px;">
+                                                    <t t-set="total" t-value="(l.qty_done*l.product_id.standard_price)" />
+                                                    $<span t-esc="'{0:,.2f}'.format(total)"/>
+                                                </td>
+                                            </t>
+                                            <t t-if="o.picking_type_id.code == 'outgoing'">
+                                                <td width="20" style="padding-left:5px;">$<span t-field="l.product_id.lst_price" /></td>
+                                                <td width="20" style="padding-left:5px;">
+                                                    <t t-set="total" t-value="(l.qty_done*l.product_id.lst_price)" />
+                                                    $<span t-esc="'{0:,.2f}'.format(total)"/>
+                                                </td>
+                                            </t>
+                                        </t>
+                                    </p>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        ------------------------------------------------------------------
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <tr>
+                                <br/>
+                                <td align="right" colspan="4">
+                                    <b>Subtotal: </b><span t-esc="'{0:,.2f}'.format(o.calculate_sp_total(o.pack_operation_product_ids, o.picking_type_id.code))" />
+                                    <br/>
+                                    <b>IVA: </b><span t-set="iva" t-value="(o.calculate_sp_total(o.pack_operation_product_ids, o.picking_type_id.code)*0.16)" /><span t-esc="'{0:,.2f}'.format(iva)"/>
+                                    <br/>
+                                    <t t-if="o.picking_type_id.code == 'incoming'">
+                                        <b>Total Nota de entrada: </b>
+                                    </t>
+                                    <t t-if="o.picking_type_id.code == 'outgoing'">
+                                        <b>Total Nota de salida: </b>
+                                    </t>
+                                    $<!--span t-esc="o.calculate_sp_total(o.move_lines)" /-->
+                                    <span t-set="gtotal" t-value="(o.calculate_sp_total(o.pack_operation_product_ids, o.picking_type_id.code)*1.16)" /><span t-esc="'{0:,.2f}'.format(gtotal)"/>
+                                    <br/>
+                                    <b>Total de Artículos: </b>
+                                    <!--span t-esc="o.calculate_sp_total_qty(o.move_lines)" /-->
+                                    <span t-esc="'%.0f'%o.calculate_sp_total_qty(o.pack_operation_product_ids)" />
+                                    <br/>
+                                    <br/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td align="center" colspan="4">
+                                    <span t-esc="o.amount_to_text(o.pack_operation_product_ids, o.picking_type_id.code)" />
+                                    <br/>
+                                    <span t-field="o.note" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <report 
+            id="format_sp_ticket_dev"
+            string="Ticket de devoluciones"
+            model="stock.picking" 
+            report_type="qweb-pdf"
+            file="stock_picking_tickets.template_inv_ticket_dev" 
+            name="stock_picking_tickets.template_inv_ticket_dev"
+        />
+
+        <record id="paperformat_formato_ticket_dev" model="report.paperformat">
+            <field name="name">Ticket de devoluciones</field>
+            <field name="format">custom</field><!-- En las propiedades de impresión, seleccionar el tamaño de papel (Roll Paper 80x297 mm) -->
+            <field name="page_height">300</field>
+            <field name="page_width">80</field>
+            <field name="orientation"></field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+            <field name="report_ids" eval="[(4, ref('format_sp_ticket_dev'))]"/>
+        </record>
+
+    </data>
+</openerp>
