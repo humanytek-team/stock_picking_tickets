@@ -115,7 +115,7 @@
                         <table>
                             <tr>
                                 <td align="center" colspan="4">
-                                    <span t-esc="o.amount_to_text(o.pack_operation_product_ids, o.picking_type_id.code)" />
+                                    <span t-esc="amount_to_text(get_total(o, taxes=True), o.company_id.currency_id.name)" />
                                     <br/>
                                     <span t-field="o.note" />
                                 </td>

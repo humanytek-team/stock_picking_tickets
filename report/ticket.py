@@ -4,6 +4,8 @@
 
 from openerp import api, models
 
+from .. import amount_to_text_es_MX
+
 
 class TicketReport(models.AbstractModel):
     _name = 'report.stock_picking_tickets.template_inv_ticket'
@@ -24,6 +26,7 @@ class TicketReport(models.AbstractModel):
             'docs': docs,
             'get_total_line': self.get_total_line,
             'get_total': self.get_total,
+            'amount_to_text': self.amount_to_text,
         }
 
         return Report.render(
@@ -86,3 +89,11 @@ class TicketReport(models.AbstractModel):
             return total_tax
 
         return total
+
+    @api.multi
+    def amount_to_text(self, total, currency):
+
+        text_total = amount_to_text_es_MX.get_amount_to_text(
+            self, float(total), currency)
+
+        return text_total
