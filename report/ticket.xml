@@ -60,7 +60,9 @@
                                           $<span t-field="l.purchase_line_id.price_unit" />
                                         </td>
                                         <td width="20" style="padding-left:5px;">
-                                          <t t-set="total" t-value="(l.product_uom_qty*l.purchase_line_id.price_unit)" />
+                                          <t
+                                              t-set="total"
+                                              t-value="get_total_line(l.product_uom_qty, l.purchase_line_id.price_unit)" />
                                           $<span t-esc="'{0:,.2f}'.format(total)"/>
                                         </td>
                                       </t>
@@ -69,7 +71,9 @@
                                           $<span t-field="l.sale_line_id.price_unit" />
                                         </td>
                                         <td width="20" style="padding-left:5px;">
-                                          <t t-set="total" t-value="(l.product_uom_qty*l.sale_line_id.price_unit)" />
+                                          <t
+                                              t-set="total"
+                                              t-value="get_total_line(l.product_uom_qty, l.sale_line_id.price_unit)" />
                                           $<span t-esc="'{0:,.2f}'.format(total)"/>
                                         </td>
                                       </t>
@@ -87,9 +91,9 @@
                             <tr>
                                 <br/>
                                 <td align="right" colspan="4">
-                                    <b>Subtotal: </b><span t-esc="'{0:,.2f}'.format(o.calculate_sp_total(o.pack_operation_product_ids, o.picking_type_id.code))" />
+                                    <b>Subtotal: </b><span t-esc="'{0:,.2f}'.format(get_total(o))" />
                                     <br/>
-                                    <b>IVA: </b><span t-set="iva" t-value="(o.calculate_sp_total(o.pack_operation_product_ids, o.picking_type_id.code)*0.16)" /><span t-esc="'{0:,.2f}'.format(iva)"/>
+                                    <b>IVA: </b><span t-set="iva" t-value="get_total(o, taxes=True, tax_total=True)" /><span t-esc="'{0:,.2f}'.format(iva)"/>
                                     <br/>
                                     <t t-if="o.picking_type_id.code == 'incoming'">
                                         <b>Total Nota de entrada: </b>
@@ -98,7 +102,7 @@
                                         <b>Total Nota de salida: </b>
                                     </t>
                                     $<!--span t-esc="o.calculate_sp_total(o.move_lines)" /-->
-                                    <span t-set="gtotal" t-value="(o.calculate_sp_total(o.pack_operation_product_ids, o.picking_type_id.code)*1.16)" /><span t-esc="'{0:,.2f}'.format(gtotal)"/>
+                                    <span t-set="gtotal" t-value="get_total(o, taxes=True)" /><span t-esc="'{0:,.2f}'.format(gtotal)"/>
                                     <br/>
                                     <b>Total de Artículos: </b>
                                     <!--span t-esc="o.calculate_sp_total_qty(o.move_lines)" /-->
