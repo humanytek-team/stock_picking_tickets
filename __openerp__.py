@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Ticket de Entrada/Salida de Inventarios',
-    'version': '9.0.1.0.2',
+    'version': '9.0.1.1.2',
     'category': 'Castalia',
     'description': """
     Modulo que crea formatos para las operaciones de Entradas y Salidas de almacen.
@@ -11,7 +11,6 @@
     'depends': [
         'stock',
         'purchase',
-        'stock_sale_order_line',
     ],
     'data': [
         'report/ticket.xml',

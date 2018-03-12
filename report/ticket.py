@@ -58,12 +58,12 @@ class TicketReport(models.AbstractModel):
                 if move.state == 'done' and move.product_uom_qty > 0:
 
                     total_line = move.product_uom_qty * \
-                        move.sale_line_id.price_unit
+                        move.procurement_id.sale_line_id.price_unit
 
                     total += total_line
 
                     if taxes:
-                        for tax in move.sale_line_id.tax_id:
+                        for tax in move.procurement_id.sale_line_id.tax_id:
                             total += total_line * tax.amount / 100
                             if tax_total:
                                 total_tax += total_line * tax.amount / 100
