@@ -58,7 +58,6 @@
                 <tr>
                   <td colspan="4">******************************************************************</td>
                 </tr>
-
                 <tr t-foreach="o.move_lines" t-as="l">
                   <p>
                     <t t-if="l.product_uom_qty &gt; 0 and l.state=='done'">

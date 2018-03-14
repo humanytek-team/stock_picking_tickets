@@ -26,11 +26,25 @@ class TicketReport(models.AbstractModel):
             'docs': docs,
             'get_total_line': self.get_total_line,
             'get_total': self.get_total,
+            'get_price_by_sale': self.get_price_by_sale,
+            'get_price_by_purchase': self.get_price_by_purchase,
             'amount_to_text': self.amount_to_text,
         }
 
         return Report.render(
             'stock_picking_tickets.template_inv_ticket', docargs)
+
+    @api.model
+    def get_price_by_sale(self, sale, product):
+        sale_id = self.env['sale.order'].search(
+            [('name', '=', sale)], limit=1).id
+        return self.env['sale.order.line'].search([('order_id', '=', sale_id), ('product_id', '=', product.id)]).price_unit
+
+    @api.model
+    def get_price_by_purchase(self, purchase, product):
+        purchase_id = self.env['purchase.order'].search(
+            [('name', '=', purchase)], limit=1).id
+        return self.env['purchase.order.line'].search([('order_id', '=', purchase_id), ('product_id', '=', product.id)]).price_unit
 
     @api.model
     def get_total_line(self, product_qty, product_price, product_taxes=False):
