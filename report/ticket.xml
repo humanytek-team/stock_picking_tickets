@@ -75,11 +75,11 @@
                         </t>
                         <t t-if="o.group_id != ''">
                           <td width="20" style="padding-left:5px;">
-                            <t t-set="price" t-value="get_price_by_sale(o.group_id.name, l.product_id)"/>
+                            <t t-set="price" t-value="get_price_by_sale(get_sale_by_name(o.group_id.name), l.product_id)"/>
                             $<span t-esc="'{0:,.2f}'.format(price)"/>
                           </td>
                           <td width="20" style="padding-left:5px;">
-                            <t t-set="total" t-value="get_total_line(l.product_uom_qty, get_price_by_sale(o.group_id.name, l.product_id))"/>
+                            <t t-set="total" t-value="get_total_line(l.product_uom_qty, get_price_by_sale(get_sale_by_name(o.group_id.name), l.product_id))"/>
                             $<span t-esc="'{0:,.2f}'.format(total)"/>
                           </td>
                         </t>
@@ -96,11 +96,11 @@
                         </t>
                         <t t-if="o.group_id != ''">
                           <td width="20" style="padding-left:5px;">
-                            <t t-set="price" t-value="get_price_by_purchase(o.group_id.name, l.product_id)"/>
+                            <t t-set="price" t-value="get_price_by_purchase(get_purchase_by_name(o.group_id.name), l.product_id)"/>
                             $<span t-esc="'{0:,.2f}'.format(price)"/>
                           </td>
                           <td width="20" style="padding-left:5px;">
-                            <t t-set="total" t-value="get_total_line(l.product_uom_qty, get_price_by_purchase(o.group_id.name, l.product_id))"/>
+                            <t t-set="total" t-value="get_total_line(l.product_uom_qty, get_price_by_purchase(get_purchase_by_name(o.group_id.name), l.product_id))"/>
                             $<span t-esc="'{0:,.2f}'.format(total)"/>
                           </td>
                         </t>
