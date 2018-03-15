@@ -61,47 +61,30 @@ class TicketReport(models.AbstractModel):
 
     @api.model
     def get_total(self, picking, taxes=False, tax_total=False):
-
         total = 0
         total_tax = 0
-
         if picking.picking_type_code == 'outgoing':
-
             for move in picking.move_lines:
-
                 if move.state == 'done' and move.product_uom_qty > 0:
-
-                    total_line = move.product_uom_qty * \
-                        move.procurement_id.sale_line_id.price_unit
-
+                    total_line = move.product_uom_qty * move.procurement_id.sale_line_id.price_unit
                     total += total_line
-
                     if taxes:
                         for tax in move.procurement_id.sale_line_id.tax_id:
                             total += total_line * tax.amount / 100
                             if tax_total:
                                 total_tax += total_line * tax.amount / 100
-
         elif picking.picking_type_code == 'incoming':
-
             for move in picking.move_lines:
-
                 if move.state == 'done' and move.product_uom_qty > 0:
-
-                    total_line = move.product_uom_qty * \
-                        move.purchase_line_id.price_unit
-
+                    total_line = move.product_uom_qty * move.purchase_line_id.price_unit
                     total += total_line
-
                     if taxes:
                         for tax in move.purchase_line_id.taxes_id:
                             total += total_line * tax.amount / 100
                             if tax_total:
                                 total_tax += total_line * tax.amount / 100
-
         if tax_total:
             return total_tax
-
         return total
 
     @api.multi
