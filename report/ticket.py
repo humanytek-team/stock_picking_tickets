@@ -65,7 +65,13 @@ class TicketReport(models.AbstractModel):
         if picking.picking_type_code == 'outgoing':
             for move in picking.move_lines:
                 if move.state == 'done' and move.product_uom_qty > 0:
-                    total_line = move.product_uom_qty * move.procurement_id.sale_line_id.price_unit
+                    if picking.group_id:
+                        total_line = move.product_uom_qty * \
+                            self.get_price_by_purchase(
+                                picking.group_id.name, move.product_id)
+                    else:
+                        total_line = move.product_uom_qty * \
+                            move.procurement_id.sale_line_id.price_unit
                     total += total_line
                     if taxes:
                         for tax in move.procurement_id.sale_line_id.tax_id:
@@ -75,7 +81,13 @@ class TicketReport(models.AbstractModel):
         elif picking.picking_type_code == 'incoming':
             for move in picking.move_lines:
                 if move.state == 'done' and move.product_uom_qty > 0:
-                    total_line = move.product_uom_qty * move.purchase_line_id.price_unit
+                    if picking.group_id:
+                        total_line = move.product_uom_qty * \
+                            self.get_price_by_sale(
+                                picking.group_id.name, move.product_id)
+                    else:
+                        total_line = move.product_uom_qty * \
+                            move.purchase_line_id.price_unit
                     total += total_line
                     if taxes:
                         for tax in move.purchase_line_id.taxes_id:
