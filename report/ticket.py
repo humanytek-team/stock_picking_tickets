@@ -48,8 +48,7 @@ class TicketReport(models.AbstractModel):
 
     @api.model
     def get_total_line(self, product_qty, product_price, product_taxes=False):
-        """Calculates total price with taxes of products processed."""
-
+        """Calculate total price with taxes of products processed."""
         total = product_qty * product_price
 
         if product_taxes:
