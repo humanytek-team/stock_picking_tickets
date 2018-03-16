@@ -2,7 +2,7 @@
 <openerp>
   <data>
     <!--FORMATO DE LA PAGINA DEL REPORTE-->
-    <template id="template_inv_ticket" name="template_inv_ticket">
+    <template id="template_inv_ticket_return" name="template_inv_ticket_return">
       <t t-call="report.html_container" t-att-style="editable and 'margin-top: 0px; font-size: 80%;'">
         <t t-foreach="docs" t-as="o">
           <div class="page" style="font-size: 7pt;font-family:Helvetica,Verdana,Arial,sans,Lucida Grande,Calibri;">
@@ -65,19 +65,21 @@
                       <td width="50"><span t-field="l.product_id.name"/>(<span t-field="l.product_id.attribute_value_ids.name"/>)</td>
                       <t t-if="o.picking_type_id.code == 'incoming'">
                         <td width="20" style="padding-left:5px;">
-                          $<span t-field="l.purchase_line_id.price_unit"/>
+                          <t t-set="price" t-value="get_price_by_sale(get_sale_by_name(o.group_id.name), l.product_id)"/>
+                          $<span t-esc="'{0:,.2f}'.format(price)"/>
                         </td>
                         <td width="20" style="padding-left:5px;">
-                          <t t-set="total" t-value="get_total_line(l.product_uom_qty, l.purchase_line_id.price_unit)"/>
+                          <t t-set="total" t-value="get_total_line(l.product_uom_qty, get_price_by_sale(get_sale_by_name(o.group_id.name), l.product_id))"/>
                           $<span t-esc="'{0:,.2f}'.format(total)"/>
                         </td>
                       </t>
                       <t t-if="o.picking_type_id.code == 'outgoing'">
                         <td width="20" style="padding-left:5px;">
-                          $<span t-field="l.procurement_id.sale_line_id.price_unit"/>
+                          <t t-set="price" t-value="get_price_by_purchase(get_purchase_by_name(o.group_id.name), l.product_id)"/>
+                          $<span t-esc="'{0:,.2f}'.format(price)"/>
                         </td>
                         <td width="20" style="padding-left:5px;">
-                          <t t-set="total" t-value="get_total_line(l.product_uom_qty, l.procurement_id.sale_line_id.price_unit)"/>
+                          <t t-set="total" t-value="get_total_line(l.product_uom_qty, get_price_by_purchase(get_purchase_by_name(o.group_id.name), l.product_id))"/>
                           $<span t-esc="'{0:,.2f}'.format(total)"/>
                         </td>
                       </t>
@@ -135,10 +137,10 @@
       </t>
     </template>
 
-    <report id="format_sp_ticket" string="Ticket de entrada/salida" model="stock.picking" report_type="qweb-pdf" file="stock_picking_tickets.template_inv_ticket" name="stock_picking_tickets.template_inv_ticket"/>
+    <report id="format_sp_ticket_return" string="Ticket de devolucion" model="stock.picking" report_type="qweb-pdf" file="stock_picking_tickets.template_inv_ticket_return" name="stock_picking_tickets.template_inv_ticket_return"/>
 
     <record id="paperformat_formato_ticket" model="report.paperformat">
-      <field name="name">Ticket de entrada/salida</field>
+      <field name="name">Ticket de devolucion</field>
       <field name="format">custom</field>
       <!-- En las propiedades de impresión, seleccionar el tamaño de papel (Roll Paper 80x297 mm) -->
       <field name="page_height">300</field>
@@ -150,7 +152,7 @@
       <field name="margin_right">0</field>
       <field name="header_spacing">0</field>
       <field name="dpi">90</field>
-      <field name="report_ids" eval="[(4, ref('format_sp_ticket'))]"/>
+      <field name="report_ids" eval="[(4, ref('format_sp_ticket_return'))]"/>
     </record>
 
   </data>
